@@ -1,29 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const shopifyKey = process.env.SHOPIFY_KEY;
-const shopifySecret = process.env.SHOPIFY_SECRET;
 const forwardingAddress = "http://f6557ff5.ngrok.io";
 const scopes = 'read_products';
-const bcrypt = require('bcrypt');
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
+const shopifyKey = process.env.SHOPIFY_KEY;
+const shopifySecret = process.env.SHOPIFY_SECRET;
 
 
 router.get('/shopify', (req, res) => {
-  const nonce = (request) => {
-    request = request.toString();
-    const saltRounds = 10;
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-      bcrypt.hash(request, salt, function(err, hash) {
-        return hash;
-      });
-    });
+  console.log(process.env.SHOPIFY_KEY);
+  const makeNonce = (request) => {
+    // TODO: make nonce function
+    let nonce = 'a;soildhg';
+    return nonce;
   };
 
   const shop = req.query.shop;
 
   if (shop) {
-    const state = nonce(req);
+    const state = makeNonce(req);
     const redirectUri = forwardingAddress + '/shopify/callback';
+    console.log(redirectUri);
     const installUrl = 'https://' + shop +
       '/admin/oauth/authorize?client_id=' + shopifyKey +
       '&scope=' + scopes +
